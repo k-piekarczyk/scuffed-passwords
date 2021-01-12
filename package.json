@@ -1,0 +1,25 @@
+{
+  "name": "scuffed-passwords",
+  "version": "0.1.0",
+  "description": "An app to store your passwords (don't really do it, the app is more than likely very scuffed and held together with duct tape, rubber bands and fairy dust) very securely!",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/k-piekarczyk/scuffed-passwords.git"
+  },
+  "author": "Krzysztof Piekarczyk <krzys@piekarczyk.eu>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/k-piekarczyk/scuffed-passwords/issues"
+  },
+  "homepage": "https://github.com/k-piekarczyk/scuffed-passwords#readme",
+  "dependencies": {
+    "next": "^10.0.5",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1"
+  }
+}
