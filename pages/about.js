@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-function About() {
+function About () {
     return (
         <>
             <h1>About Page</h1>
