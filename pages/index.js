@@ -5,6 +5,7 @@ function Home () {
         <>
             <h1>Home Page</h1>
             <Link href='/about'>About</Link>
+            <img src="/static/home.png" />
         </>
     )
 }
