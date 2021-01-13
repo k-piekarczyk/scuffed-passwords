@@ -1,9 +1,9 @@
-name: docker-compose-actions-workflow
+name: docker-compose-build-actions-workflow
 on: push
 jobs:
-  build:
+  build_docker_images:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - name: Build the stack
-        run: docker-compose up -d
+        run: docker-compose build

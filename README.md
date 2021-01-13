@@ -1,4 +1,5 @@
 # Scuffed Passwords
+![Docker Compose Build](https://github.com/k-piekarczyk/scuffed-passwords/workflows/docker-compose-build-actions-workflow/badge.svg?branch=main)
 An app to store your passwords (don't really do it, the app is more than likely very scuffed and held together with duct tape, rubber bands and fairy dust) very securely!
 
 ## Instructions
