@@ -1,11 +1,9 @@
-import Link from 'next/link'
+import Navigation from '../components/navigation'
 
 function Home () {
   return (
     <>
-      <h1>Home Page</h1>
-      <Link href='/about'>About</Link>
-      <img src='/static/home.png' />
+      <Navigation />
     </>
   )
 }
