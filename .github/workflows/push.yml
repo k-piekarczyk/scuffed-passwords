@@ -1,5 +1,11 @@
 name: docker-compose-build-actions-workflow
-on: push
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 jobs:
   build_docker_images:
     runs-on: ubuntu-latest
