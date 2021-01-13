@@ -30,6 +30,6 @@
   },
   "husky": {
     "hooks": {
-      "pre-commit": "npm run standard:fix"    }
+      "pre-commit": "standard --fix && git add -A ."    }
   }
 }
