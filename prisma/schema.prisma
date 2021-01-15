@@ -15,6 +15,7 @@ datasource db {
 model User {
   id           Int        @id @default(autoincrement())
   email        String     @unique
+  activated    Boolean    @default(false)
   passwordHash String
   passwordSalt String
   passwords    Password[]
@@ -22,16 +23,29 @@ model User {
 }
 
 model Password {
-  id      Int    @id @default(autoincrement())
+  id      Int     @id @default(autoincrement())
   name    String
   stored  String
-  ownerId Int
-  owner   User   @relation(fields: [ownerId], references: [id])
+  user    User    @relation(fields: [userId], references: [id])
+  userId  Int
 }
 
 model Session {
-  id      Int    @id @default(autoincrement())
-  ownerId Int
-  token   String @unique
-  owner   User   @relation(fields: [ownerId], references: [id])
+  id       Int      @id @default(autoincrement())
+  user     User     @relation(fields: [userId], references: [id])
+  userId   Int
+  token    String   @unique
+  issued   DateTime
+  duration Int
+  revoked  Boolean  @default(false)
+}
+
+model Token {
+  id       Int       @id @default(autoincrement())
+  user     User      @relation(fields: [userId], references: [id])
+  userId   Int
+  value    String    @unique
+  issued   DateTime
+  expires  DateTime
+  used     Boolean   @default(false)
 }

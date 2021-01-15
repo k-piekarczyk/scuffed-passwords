@@ -1,10 +1,9 @@
 import { PrismaClient } from '@prisma/client'
 import { pbkdf2Sync, randomBytes } from 'crypto'
-import moment from 'moment'
 
 const prisma = new PrismaClient()
 
-async function RegisterAPI (req, res) {
+async function ValidateAPI (req, res) {
   switch (req.method) {
     case 'POST':
       await postHandler(req, res)
@@ -36,25 +35,11 @@ async function postHandler (req, res) {
       }
     })
 
-    const token = await prisma.token.create({
-      data: {
-        value: randomBytes(32).toString('hex'),
-        issued: moment.utc().toDate(),
-        expires: moment.utc().add(15, 'minutes').toDate(),
-        user: {
-          connect: { email: email }
-        }
-      }
-    })
-
-    console.log(token)
-
     return res.status(201).json({
       message: `User with email '${email}' created.`,
       status: 'success'
     })
   } catch (error) {
-    console.error(error)
     if (error.code === 'P2002' && error.meta.target.includes('email')) {
       return res.status(400).json({
         message: 'An account with that email already exists.',
@@ -69,4 +54,4 @@ async function postHandler (req, res) {
   }
 }
 
-export default RegisterAPI
+export default ValidateAPI
