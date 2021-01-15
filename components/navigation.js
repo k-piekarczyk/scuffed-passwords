@@ -5,10 +5,10 @@ function Navigation () {
   return (
     <Navbar bg='light' expand='lg'>
       <Link href='/' passHref>
-        <Navbar.Brand>Scuffed Passwords</Navbar.Brand>
+        <Navbar.Brand><code>Scuffed Passwords</code></Navbar.Brand>
       </Link>
 
-      <Navbar.Toggle aria-controls='navigation-bar' />
+      <Navbar.Toggle aria-controls='navigation-bar'/>
       <Navbar.Collapse id='navigation-bar'>
         <Nav className='mr-auto'>
           <Link href='/passwords' passHref>
