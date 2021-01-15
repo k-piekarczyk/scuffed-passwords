@@ -2,6 +2,7 @@ import { Container } from 'react-bootstrap'
 
 import Navigation from '../components/navigation'
 import { useRouter } from 'next/router'
+import ConditionalRender from '../components/conditionalRender'
 
 function SlugBased () {
   const router = useRouter()
