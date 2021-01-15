@@ -10,7 +10,7 @@
     "standard:fix": "standard --fix",
     "db:dev:up": "docker run --name scuffed-db -p 5432:5432 -e POSTGRES_USER=scuffedUser -e POSTGRES_PASSWORD=scuffedPassword -e POSTGRES_DB=scuffed -v postgres:/var/lib/postgresql/data -d postgres",
     "db:dev:down": "docker stop scuffed-db && docker rm scuffed-db",
-    "db:dev:wipe": "docker volume remove postgres" 
+    "db:dev:wipe": "docker volume remove postgres"
   },
   "repository": {
     "type": "git",
@@ -32,7 +32,6 @@
   },
   "devDependencies": {
     "@prisma/cli": "^2.14.0",
-    "dotenv": "^8.2.0",
     "standard": "^16.0.3"
   }
 }
