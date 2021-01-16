@@ -73,7 +73,7 @@ async function handler (req, res) {
     data: {
       token: randomBytes(64).toString('hex'),
       issued: moment.utc().toDate(),
-      expires: moment.utc().add(15, 'minutes').toDate(),
+      expires: moment.utc().add(30, 'minutes').toDate(),
       ip: ip,
       agent: userAgent,
       user: {

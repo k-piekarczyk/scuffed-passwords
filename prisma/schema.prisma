@@ -26,6 +26,7 @@ model Password {
   id      Int     @id @default(autoincrement())
   name    String
   stored  String
+  salt    String
   user    User    @relation(fields: [userId], references: [id])
   userId  Int
 }
