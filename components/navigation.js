@@ -1,7 +1,15 @@
 import Link from 'next/link'
 import { Nav, Navbar } from 'react-bootstrap'
+import { useEffect, useState } from 'react'
 
-function Navigation ({ loggedIn }) {
+function Navigation () {
+  const [loggedIn, setLoggedIn] = useState(false)
+
+  useEffect(() => {
+    const session = window.localStorage.getItem('session')
+    if (!session) setLoggedIn(false)
+    else setLoggedIn(true)
+  })
 
   const leftLinks = (
     <Nav className='mr-auto'>
