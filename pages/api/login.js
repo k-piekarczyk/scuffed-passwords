@@ -19,18 +19,20 @@ async function handler (req, res) {
   const userAgent = req.headers['user-agent']
 
   if (!userAgent) {
+    await prisma.$disconnect()
     return res.status(400).json({
       message: 'Stop being nasty, I can tell you\'re trying something weird.',
-      status: 'failure'
+      status: 'danger'
     })
   }
 
   const { email, password } = req.body
 
   if ((!email || typeof email !== 'string') || (!password || typeof password !== 'string')) {
+    await prisma.$disconnect()
     return res.status(400).json({
       message: 'Both email and password are required, and need to be strings.',
-      status: 'failure'
+      status: 'danger'
     })
   }
 
@@ -39,27 +41,29 @@ async function handler (req, res) {
   })
 
   if (!user) {
+    await prisma.$disconnect()
     return res.status(400).json({
       message: 'Wrong email/password.',
-      status: 'failure'
+      status: 'danger'
     })
   }
 
   const passwordHash = pbkdf2Sync(password, user.passwordSalt, 100000, 512, 'sha512').toString('hex')
 
   if (passwordHash !== user.passwordHash) {
+    await prisma.$disconnect()
     return res.status(400).json({
       message: 'Wrong email/password.',
-      status: 'failure'
+      status: 'danger'
     })
   }
 
   if (!user.activated) {
     await makeToken(prisma, email)
-
+    await prisma.$disconnect()
     return res.status(400).json({
       message: 'The user has not been activated. We sent you a new activation token.',
-      status: 'failure'
+      status: 'danger'
     })
   }
 
@@ -78,6 +82,7 @@ async function handler (req, res) {
     }
   })
 
+  await prisma.$disconnect()
   return res.status(200).json({
     message: 'Successfull login',
     status: 'success',

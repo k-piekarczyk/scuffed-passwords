@@ -18,18 +18,20 @@ async function handler (req, res) {
   const userAgent = req.headers['user-agent']
 
   if (!userAgent) {
+    await prisma.$disconnect()
     return res.status(400).json({
       message: "Stop being nasty, I can tell you're trying something weird.",
-      status: 'failure'
+      status: 'danger'
     })
   }
 
   const { tokenValue } = req.body
 
   if (!tokenValue || typeof tokenValue !== 'string') {
+    await prisma.$disconnect()
     return res.status(400).json({
       message: 'This route expects a tokenValue that is a string',
-      status: 'failure'
+      status: 'danger'
     })
   }
 
@@ -38,9 +40,10 @@ async function handler (req, res) {
   })
 
   if (!token || token.invalid || moment().isAfter(moment(token.expires))) {
+    await prisma.$disconnect()
     return res.status(400).json({
       message: 'Invalid activation token.',
-      status: 'failure'
+      status: 'danger'
     })
   }
 
@@ -54,14 +57,17 @@ async function handler (req, res) {
       where: { id: token.id },
       data: { invalid: true }
     })
+
   } catch (error) {
     console.log(error)
+    await prisma.$disconnect()
     return res.status(500).json({
       message: 'Congrats, you broke it :c',
-      status: 'failure'
+      status: 'danger'
     })
   }
 
+  await prisma.$disconnect()
   return res.status(200).json({
     message: 'User activated.',
     status: 'success'
