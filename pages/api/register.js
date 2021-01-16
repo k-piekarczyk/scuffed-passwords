@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { pbkdf2Sync, randomBytes } from 'crypto'
-import moment from 'moment'
+import makeToken from '../../lib/makeToken'
 
 const prisma = new PrismaClient()
 
@@ -15,6 +15,15 @@ async function RegisterAPI (req, res) {
 }
 
 async function postHandler (req, res) {
+  const userAgent = req.headers['user-agent']
+
+  if (!userAgent) {
+    return res.status(400).json({
+      message: 'Stop being nasty, I can tell you\'re trying something weird.',
+      status: 'failure'
+    })
+  }
+
   const { email, password } = req.body
 
   if ((!email || typeof email !== 'string') || (!password || typeof password !== 'string')) {
@@ -36,18 +45,7 @@ async function postHandler (req, res) {
       }
     })
 
-    const token = await prisma.token.create({
-      data: {
-        value: randomBytes(32).toString('hex'),
-        issued: moment.utc().toDate(),
-        expires: moment.utc().add(15, 'minutes').toDate(),
-        user: {
-          connect: { email: email }
-        }
-      }
-    })
-
-    console.log(token)
+    await makeToken(prisma, email)
 
     return res.status(201).json({
       message: `User with email '${email}' created.`,

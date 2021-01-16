@@ -22,13 +22,15 @@ CREATE TABLE "Session" (
     "userId" INTEGER NOT NULL,
     "token" TEXT NOT NULL,
     "issued" DATETIME NOT NULL,
-    "duration" INTEGER NOT NULL,
+    "expires" DATETIME NOT NULL,
     "revoked" BOOLEAN NOT NULL DEFAULT false,
+    "ip" TEXT NOT NULL,
+    "agent" TEXT NOT NULL,
     FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateTable
-CREATE TABLE "Token" (
+CREATE TABLE "ActivationToken" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "userId" INTEGER NOT NULL,
     "value" TEXT NOT NULL,
@@ -45,4 +47,4 @@ CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
 CREATE UNIQUE INDEX "Session.token_unique" ON "Session"("token");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Token.value_unique" ON "Token"("value");
+CREATE UNIQUE INDEX "ActivationToken.value_unique" ON "ActivationToken"("value");

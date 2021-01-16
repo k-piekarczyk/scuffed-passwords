@@ -3,8 +3,10 @@ import Navigation from '../components/navigation'
 import { Jumbotron, Container } from 'react-bootstrap'
 
 import { FaGithub, FaHeart } from 'react-icons/fa'
+import { useEffect } from 'react'
 
 function Home () {
+  useEffect(() => console.log('I\'m pickle rick!'))
   return (
     <>
       <Navigation />
@@ -19,7 +21,8 @@ function Home () {
           <h4>Disclaimer</h4>
           <p className='text-justify'>
             Do NOT actually use it! I am in no way, shape or form an expert on security,
-            (at the time of writing this), and although it is an attempt to display at least some understanding of application
+            (at the time of writing this), and although it is an attempt to display at least some understanding of
+            application
             security, you shoud treat it for what it is: a student project.
           </p>
 

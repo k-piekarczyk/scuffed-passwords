@@ -19,7 +19,7 @@ model User {
   passwordHash String
   passwordSalt String
   passwords    Password[]
-  Session      Session[]
+  session      Session[]
 }
 
 model Password {
@@ -36,16 +36,18 @@ model Session {
   userId   Int
   token    String   @unique
   issued   DateTime
-  duration Int
+  expires  DateTime
   revoked  Boolean  @default(false)
+  ip       String
+  agent    String
 }
 
-model Token {
+model ActivationToken {
   id       Int       @id @default(autoincrement())
   user     User      @relation(fields: [userId], references: [id])
   userId   Int
   value    String    @unique
   issued   DateTime
   expires  DateTime
-  used     Boolean   @default(false)
+  invalid  Boolean   @default(false)
 }
