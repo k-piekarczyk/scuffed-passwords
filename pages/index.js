@@ -3,10 +3,8 @@ import Navigation from '../components/navigation'
 import { Jumbotron, Container } from 'react-bootstrap'
 
 import { FaGithub, FaHeart } from 'react-icons/fa'
-import { useEffect } from 'react'
 
 function Home () {
-  useEffect(() => console.log('I\'m pickle rick!'))
   return (
     <>
       <Navigation />

@@ -3,7 +3,7 @@ import { Container, Form, Button, Alert } from 'react-bootstrap'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 
-function Login () {
+function Register () {
   const router = useRouter()
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState('danger')
@@ -11,10 +11,10 @@ function Login () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  async function submitLogin (event) {
+  async function submitRegister (event) {
     event.preventDefault()
 
-    const response = await fetch('/api/login', {
+    const response = await fetch('/api/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -25,22 +25,21 @@ function Login () {
     const body = await response.json()
     setStatus(body.status)
     setMessage(body.message)
-    if (response.status === 200) {
-      window.localStorage.setItem('session', body.payload)
+    if (response.status === 201) {
       setTimeout(() => {
         router.push('/')
-      }, 1000)
+      }, 2000)
     }
   }
 
   return (
     <>
-      <Navigation />
+      <Navigation/>
       <Container className='mt-5 d-flex justify-content-center'>
         <div>
-          <h1>Log In</h1>
+          <h1>Register</h1>
           {message && <Alert variant={status}>{message}</Alert>}
-          <Form onSubmit={submitLogin}>
+          <Form onSubmit={submitRegister}>
             <Form.Group controlId='formEmail'>
               <Form.Label>Email address</Form.Label>
               <Form.Control
@@ -76,4 +75,4 @@ function Login () {
   )
 }
 
-export default Login
+export default Register

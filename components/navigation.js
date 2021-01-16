@@ -1,9 +1,17 @@
 import Link from 'next/link'
 import { Nav, Navbar } from 'react-bootstrap'
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/router'
 
 function Navigation () {
+  const router = useRouter()
   const [loggedIn, setLoggedIn] = useState(false)
+
+  function handleLogout (event) {
+    event.preventDefault()
+    window.localStorage.removeItem('session')
+    router.push('/')
+  }
 
   useEffect(() => {
     const session = window.localStorage.getItem('session')
@@ -32,9 +40,7 @@ function Navigation () {
 
   const authRightLinks = (
     <Nav className='ml-auto'>
-      <Link href='/logout' passHref>
-        <Nav.Link>Log Out</Nav.Link>
-      </Link>
+      <Nav.Link onClick={handleLogout}>Log Out</Nav.Link>
     </Nav>
   )
 
@@ -44,7 +50,7 @@ function Navigation () {
         <Navbar.Brand><code>Scuffed Passwords</code></Navbar.Brand>
       </Link>
 
-      <Navbar.Toggle aria-controls='navigation-bar' />
+      <Navbar.Toggle aria-controls='navigation-bar'/>
       <Navbar.Collapse id='navigation-bar'>
         {loggedIn && leftLinks}
         {!loggedIn ? unAuthRightLinks : authRightLinks}

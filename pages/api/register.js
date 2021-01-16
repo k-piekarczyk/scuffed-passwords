@@ -51,7 +51,7 @@ async function handler (req, res) {
 
     await prisma.$disconnect()
     return res.status(201).json({
-      message: `User with email '${email}' created.`,
+      message: `User with email '${email}' created. Activation token has been sent.`,
       status: 'success'
     })
   } catch (error) {
