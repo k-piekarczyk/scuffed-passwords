@@ -19,10 +19,7 @@ async function handler (req, res) {
 
   if (!userAgent) {
     await prisma.$disconnect()
-    return res.status(400).json({
-      message: "Stop being nasty, I can tell you're trying something weird.",
-      status: 'danger'
-    })
+    return res.status(400).end()
   }
 
   const { tokenValue } = req.body

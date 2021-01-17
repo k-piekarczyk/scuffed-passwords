@@ -12,6 +12,7 @@ CREATE TABLE "Password" (
     "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     "name" TEXT NOT NULL,
     "stored" TEXT NOT NULL,
+    "salt" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
     FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -36,12 +37,15 @@ CREATE TABLE "ActivationToken" (
     "value" TEXT NOT NULL,
     "issued" DATETIME NOT NULL,
     "expires" DATETIME NOT NULL,
-    "used" BOOLEAN NOT NULL DEFAULT false,
+    "invalid" BOOLEAN NOT NULL DEFAULT false,
     FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Password.name_userId_unique" ON "Password"("name", "userId");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Session.token_unique" ON "Session"("token");

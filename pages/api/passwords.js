@@ -10,6 +10,9 @@ async function PasswordsAPI (req, res) {
     case 'GET':
       await getHandler(req, res, user)
       break
+    case 'POST':
+      await postHandler(req, res, user)
+      break
     default:
       return res.status(405).end()
   }
@@ -22,10 +25,7 @@ async function checkSession (req, res) {
 
   if (!userAgent) {
     await prisma.$disconnect()
-    res.status(400).json({
-      message: 'Stop being nasty, I can tell you\'re trying something weird.',
-      status: 'danger'
-    })
+    res.status(400).end()
     return false
   }
 
@@ -38,7 +38,7 @@ async function checkSession (req, res) {
   const session = await prisma.session.findUnique({
     where: { token: sessionToken }
   })
-  console.log(session)
+
   if (!session || session.revoked || moment().isAfter(moment(session.expires))) {
     await prisma.$disconnect()
     res.status(401).end()
@@ -65,8 +65,54 @@ async function getHandler (req, res, user) {
     where: { userId: user.id }
   })
 
-  console.log()
   return res.status(200).json(passwords)
+}
+
+async function postHandler (req, res, user) {
+  const { name, encoded, salt } = req.body
+
+  if ((!name || typeof name !== 'string') ||
+    (!encoded || typeof encoded !== 'string') ||
+    (!salt || typeof salt !== 'string')
+  ) {
+    await prisma.$disconnect()
+    return res.status(400).json({
+      message: 'Name, salt and encoded password need to be present and be strings, in the body of the request.',
+      status: 'danger'
+    })
+  }
+
+  try {
+    await prisma.password.create({
+      data: {
+        name,
+        stored: encoded,
+        salt,
+        user: {
+          connect: { id: user.id }
+        }
+      }
+    })
+
+    await prisma.$disconnect()
+    return res.status(201).json({
+      message: 'New password added to your account.',
+      status: 'success'
+    })
+  } catch (error) {
+    await prisma.$disconnect()
+    if (error.code === 'P2002') {
+      return res.status(400).json({
+        message: 'You already have a password with that name.',
+        status: 'danger'
+      })
+    } else {
+      return res.status(400).json({
+        message: 'There was a problem with your request.',
+        status: 'danger'
+      })
+    }
+  }
 }
 
 export default PasswordsAPI
