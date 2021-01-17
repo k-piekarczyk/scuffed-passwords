@@ -2,6 +2,7 @@ import Navigation from '../components/navigation'
 import { Container, Form, Button, Alert } from 'react-bootstrap'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
+import { toast } from 'react-hot-toast'
 
 function Login () {
   const router = useRouter()
@@ -27,9 +28,10 @@ function Login () {
     setMessage(body.message)
     if (response.status === 200) {
       window.localStorage.setItem('session', body.payload)
+      toast.success('You will be redirected to the home page in 2s.')
       setTimeout(() => {
         router.push('/')
-      }, 1000)
+      }, 2000)
     }
   }
 

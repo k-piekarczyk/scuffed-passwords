@@ -9,7 +9,7 @@ function Home () {
     <>
       <Navigation />
       <Container className='mt-3'>
-        <Jumbotron>
+        <Jumbotron variant='dark'>
           <h1>Welcome to <code>Scuffed Passswords</code></h1>
           <p>
             A simple yet somewhat secure password storage.

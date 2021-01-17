@@ -5,6 +5,7 @@ import { FaEye, FaEyeSlash, FaPlus } from 'react-icons/fa'
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react'
 import forge from 'node-forge'
+import { toast } from 'react-hot-toast'
 
 function PasswordList () {
   const router = useRouter()
@@ -101,9 +102,9 @@ function PasswordList () {
       decipher.start({ iv: iv })
       decipher.update(encrypted)
       decipher.finish()
-      console.log(decipher.output)
       setDecipheredPassword(JSON.parse(decipher.output.toString()).payload)
     } catch (e) {
+      toast.error('Bad master password!')
       handleClose()
     }
   }

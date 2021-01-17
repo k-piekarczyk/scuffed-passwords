@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Nav, Navbar } from 'react-bootstrap'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import { toast } from 'react-hot-toast'
 
 function Navigation () {
   const router = useRouter()
@@ -10,6 +11,7 @@ function Navigation () {
   function handleLogout (event) {
     event.preventDefault()
     window.localStorage.removeItem('session')
+    toast.success('You have been logged out')
     router.push('/')
   }
 
@@ -23,6 +25,10 @@ function Navigation () {
     <Nav className='mr-auto'>
       <Link href='/passwords' passHref>
         <Nav.Link>Passwords</Nav.Link>
+      </Link>
+
+      <Link href='/sessions' passHref>
+        <Nav.Link>Sessions</Nav.Link>
       </Link>
     </Nav>
   )

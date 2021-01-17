@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import { Toaster } from 'react-hot-toast'
 
 import '../styles/global.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -12,6 +13,10 @@ function MyApp ({ Component, pageProps }) {
       </Head>
 
       <Component {...pageProps} />
+      <Toaster
+        position='top-center'
+        reverseOrder={false}
+      />
     </>
   )
 }

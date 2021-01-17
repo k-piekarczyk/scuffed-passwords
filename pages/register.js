@@ -2,6 +2,7 @@ import Navigation from '../components/navigation'
 import { Container, Form, Button, Alert } from 'react-bootstrap'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
+import { toast } from 'react-hot-toast'
 
 function Register () {
   const router = useRouter()
@@ -26,6 +27,7 @@ function Register () {
     setStatus(body.status)
     setMessage(body.message)
     if (response.status === 201) {
+      toast.success('You will be redirected to the home page in 2s.')
       setTimeout(() => {
         router.push('/')
       }, 2000)
