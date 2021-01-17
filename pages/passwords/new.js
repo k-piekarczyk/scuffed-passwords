@@ -3,15 +3,18 @@ import { Container, Form, Button, Alert, InputGroup } from 'react-bootstrap'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
+import forge from 'node-forge'
 
 function NewPassword () {
   const router = useRouter()
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState('danger')
-  const [obscure, setObscure] = useState(true)
+  const [obscurePassword, setObscurePassword] = useState(true)
+  const [obscureMasterPassword, setObscureMasterPassword] = useState(true)
 
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
+  const [masterPassword, setMasterPassword] = useState('')
 
   const [isAuth, setIsAuth] = useState(false)
 
@@ -28,13 +31,31 @@ function NewPassword () {
 
     const sessionToken = window.localStorage.getItem('session')
 
+    // random bullshit go
+
+    const salt = forge.random.getBytesSync(128)
+    const key = forge.pkcs5.pbkdf2(masterPassword, salt, 10000, 32)
+    const iv = forge.random.getBytesSync(16)
+    const payload = forge.util.createBuffer(JSON.stringify({ payload: password }))
+
+    const cipher = forge.cipher.createCipher('AES-CBC', key)
+    cipher.start({ iv })
+    cipher.update(payload)
+    cipher.finish()
+    const encrypted = cipher.output
+
     const response = await fetch('/api/passwords', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         Authorization: sessionToken
       },
-      body: JSON.stringify({ name, encoded: password, salt: 'not implemented' })
+      body: JSON.stringify({
+        name,
+        salt: forge.util.bytesToHex(salt),
+        iv: forge.util.bytesToHex(iv),
+        encrypted: encrypted.toHex()
+      })
     })
 
     if (response.status === 401) {
@@ -56,7 +77,7 @@ function NewPassword () {
   if (!isAuth) {
     return (
       <>
-        <Navigation />
+        <Navigation/>
         <Container className='mt-5'>
           <h3>Loading...</h3>
         </Container>
@@ -66,7 +87,7 @@ function NewPassword () {
 
   return (
     <>
-      <Navigation />
+      <Navigation/>
       <Container className='mt-5 d-flex justify-content-center'>
         <div>
           <h1>New Password</h1>
@@ -87,7 +108,7 @@ function NewPassword () {
               <Form.Label>Password</Form.Label>
               <InputGroup>
                 <Form.Control
-                  type={obscure ? 'password' : 'text'}
+                  type={obscurePassword ? 'password' : 'text'}
                   placeholder='Password'
                   required
                   value={password}
@@ -96,12 +117,36 @@ function NewPassword () {
                 <InputGroup.Append>
                   <Button
                     variant='outline-secondary'
-                    onClick={() => setObscure(!obscure)}
+                    onClick={() => setObscurePassword(!obscurePassword)}
                   >
-                    {obscure ? (<FaEyeSlash />) : (<FaEye />)}
+                    {obscurePassword ? (<FaEyeSlash/>) : (<FaEye/>)}
                   </Button>
                 </InputGroup.Append>
               </InputGroup>
+            </Form.Group>
+
+            <Form.Group controlId='formBasicMasterPassword'>
+              <Form.Label>Master password</Form.Label>
+              <InputGroup>
+                <Form.Control
+                  type={obscureMasterPassword ? 'password' : 'text'}
+                  placeholder='Master password'
+                  required
+                  value={masterPassword}
+                  onChange={event => setMasterPassword(event.target.value)}
+                />
+                <InputGroup.Append>
+                  <Button
+                    variant='outline-secondary'
+                    onClick={() => setObscureMasterPassword(!obscureMasterPassword)}
+                  >
+                    {obscureMasterPassword ? (<FaEyeSlash/>) : (<FaEye/>)}
+                  </Button>
+                </InputGroup.Append>
+              </InputGroup>
+              <Form.Text className='text-muted'>
+                This password is never stored, if you loose it, your data is gone.
+              </Form.Text>
             </Form.Group>
 
             <Button variant='primary' type='submit'>
