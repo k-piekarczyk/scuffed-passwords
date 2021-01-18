@@ -45,8 +45,9 @@ model Session {
   agent    String
 }
 
-model ActivationToken {
+model Token {
   id       Int       @id @default(autoincrement())
+  type     String
   user     User      @relation(fields: [userId], references: [id])
   userId   Int
   value    String    @unique

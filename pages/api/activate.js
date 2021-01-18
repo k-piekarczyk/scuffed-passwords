@@ -32,8 +32,11 @@ async function handler (req, res) {
     })
   }
 
-  const token = await prisma.activationToken.findUnique({
-    where: { value: tokenValue }
+  const token = await prisma.token.findUnique({
+    where: {
+      type: 'activation',
+      value: tokenValue
+    }
   })
 
   if (!token || token.invalid || moment().isAfter(moment(token.expires))) {
@@ -50,7 +53,7 @@ async function handler (req, res) {
       data: { activated: true }
     })
 
-    await prisma.activationToken.update({
+    await prisma.token.update({
       where: { id: token.id },
       data: { invalid: true }
     })
