@@ -26,6 +26,7 @@
     "@fortawesome/react-fontawesome": "^0.1.14",
     "@prisma/client": "^2.14.0",
     "bootstrap": "^4.5.3",
+    "fast-password-entropy": "^1.1.1",
     "moment": "^2.29.1",
     "moment-timezone": "^0.5.32",
     "next": "^10.0.5",
