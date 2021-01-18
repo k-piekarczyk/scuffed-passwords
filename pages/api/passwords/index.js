@@ -66,7 +66,10 @@ async function getHandler (req, res, user) {
     select: {
       id: true,
       name: true
-    }
+    },
+    orderBy: [
+      { id: 'desc' }
+    ]
   })
 
   return res.status(200).json(passwords)

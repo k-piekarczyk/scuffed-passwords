@@ -51,7 +51,7 @@ function SessionList () {
     <>
       <Navigation />
       <Container className='mt-3'>
-        <h1> Your passwords </h1>
+        <h1> Your sessions </h1>
         <Container>
           <ListGroup>
             {sessions.map((session, idx) => (

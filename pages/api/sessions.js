@@ -72,7 +72,6 @@ async function handler (req, res, user) {
       { expires: 'desc' }
     ]
   })
-
   return res.status(200).json(sessions)
 }
 

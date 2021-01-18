@@ -12,8 +12,11 @@ function Login () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const [processing, setProcessing] = useState(false)
+
   async function submitLogin (event) {
     event.preventDefault()
+    setProcessing(true)
 
     const response = await fetch('/api/login', {
       method: 'POST',
@@ -28,10 +31,10 @@ function Login () {
     setMessage(body.message)
     if (response.status === 200) {
       window.localStorage.setItem('session', body.payload)
-      toast.success('You will be redirected to the home page in 2s.')
-      setTimeout(() => {
-        router.push('/')
-      }, 2000)
+      toast.success('Succesfull login.')
+      router.push('/')
+    } else {
+      setProcessing(false)
     }
   }
 
@@ -51,6 +54,7 @@ function Login () {
                 required
                 value={email}
                 onChange={event => setEmail(event.target.value)}
+                disabled={processing}
               />
               <Form.Text className='text-muted'>
                 We'll never share your email with anyone else.
@@ -65,10 +69,11 @@ function Login () {
                 required
                 value={password}
                 onChange={event => setPassword(event.target.value)}
+                disabled={processing}
               />
             </Form.Group>
 
-            <Button variant='primary' type='submit'>
+            <Button variant='primary' type='submit' disabled={processing}>
               Submit
             </Button>
           </Form>

@@ -81,7 +81,6 @@ function PasswordList () {
       }
 
       const body = await response.json()
-      console.dir(body)
 
       setCurrentPassword(body)
       setShowModal(true)
@@ -162,7 +161,7 @@ function PasswordList () {
                   variant='outline-secondary'
                   onClick={() => setObscurePassword(!obscurePassword)}
                 >
-                  {obscurePassword ? (<FaEyeSlash />) : (<FaEye />)}
+                  {obscurePassword ? (<FaEyeSlash/>) : (<FaEye/>)}
                 </Button>
               </InputGroup.Append>
             </InputGroup>
@@ -170,7 +169,10 @@ function PasswordList () {
         )}
         {step === 2 && (
           <Modal.Body>
-            {currentPassword.name}: {decipheredPassword || '...'}
+            {currentPassword.name}:
+            <p className='bg-dark p-2 rounded'>
+              <code>{decipheredPassword || '...'}</code>
+            </p>
           </Modal.Body>
         )}
         <Modal.Footer>

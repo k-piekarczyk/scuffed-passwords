@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import forge from 'node-forge'
+import { toast } from 'react-hot-toast'
 
 function NewPassword () {
   const router = useRouter()
@@ -15,6 +16,8 @@ function NewPassword () {
   const [name, setName] = useState('')
   const [password, setPassword] = useState('')
   const [masterPassword, setMasterPassword] = useState('')
+
+  const [processing, setProcessing] = useState(false)
 
   const [isAuth, setIsAuth] = useState(false)
 
@@ -28,10 +31,9 @@ function NewPassword () {
 
   async function submitNewPassword (event) {
     event.preventDefault()
+    setProcessing(true)
 
     const sessionToken = window.localStorage.getItem('session')
-
-    // random bullshit go
 
     const salt = forge.random.getBytesSync(128)
     const key = forge.pkcs5.pbkdf2(masterPassword, salt, 10000, 32)
@@ -68,9 +70,10 @@ function NewPassword () {
     setStatus(body.status)
     setMessage(body.message)
     if (response.status === 201) {
-      setTimeout(() => {
-        router.push('/passwords')
-      }, 1000)
+      toast.success('Password created successfully.')
+      router.push('/passwords')
+    } else {
+      setProcessing(false)
     }
   }
 
@@ -101,6 +104,7 @@ function NewPassword () {
                 required
                 value={name}
                 onChange={event => setName(event.target.value)}
+                disabled={processing}
               />
             </Form.Group>
 
@@ -113,6 +117,7 @@ function NewPassword () {
                   required
                   value={password}
                   onChange={event => setPassword(event.target.value)}
+                  disabled={processing}
                 />
                 <InputGroup.Append>
                   <Button
@@ -134,6 +139,7 @@ function NewPassword () {
                   required
                   value={masterPassword}
                   onChange={event => setMasterPassword(event.target.value)}
+                  disabled={processing}
                 />
                 <InputGroup.Append>
                   <Button
@@ -149,7 +155,7 @@ function NewPassword () {
               </Form.Text>
             </Form.Group>
 
-            <Button variant='primary' type='submit'>
+            <Button variant='primary' type='submit' disabled={processing}>
               Submit
             </Button>
           </Form>

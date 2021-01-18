@@ -2,6 +2,7 @@ import Navigation from '../../components/navigation'
 import { Container, Alert } from 'react-bootstrap'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
+import { toast } from 'react-hot-toast'
 
 function Activate () {
   const router = useRouter()
@@ -21,14 +22,13 @@ function Activate () {
     const body = await response.json()
     setStatus(body.status)
     setMessage(body.message)
-    setTimeout(() => {
-      router.push('/')
-    }, 1000)
+    toast.success('Successfully activated the account. You can log in now.', { duration: 4000 })
+    router.push('/')
   }, [])
 
   return (
     <>
-      <Navigation />
+      <Navigation/>
       <Container className='mt-5 d-flex justify-content-center'>
         <div>
           <h1>Activation...</h1>

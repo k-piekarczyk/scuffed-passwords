@@ -11,8 +11,8 @@ function Navigation () {
   function handleLogout (event) {
     event.preventDefault()
     window.localStorage.removeItem('session')
-    toast.success('You have been logged out')
     router.push('/')
+    toast.success('You have been logged out')
   }
 
   useEffect(() => {

@@ -12,8 +12,11 @@ function Register () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
+  const [processing, setProcessing] = useState(false)
+
   async function submitRegister (event) {
     event.preventDefault()
+    setProcessing(true)
 
     const response = await fetch('/api/register', {
       method: 'POST',
@@ -27,10 +30,10 @@ function Register () {
     setStatus(body.status)
     setMessage(body.message)
     if (response.status === 201) {
-      toast.success('You will be redirected to the home page in 2s.')
-      setTimeout(() => {
-        router.push('/')
-      }, 2000)
+      toast.success('Successfully registered. Activate your account with the link we sent you.', {duration: 4000})
+      router.push('/')
+    } else {
+      setProcessing(false)
     }
   }
 
@@ -50,6 +53,7 @@ function Register () {
                 required
                 value={email}
                 onChange={event => setEmail(event.target.value)}
+                disabled={processing}
               />
               <Form.Text className='text-muted'>
                 We'll never share your email with anyone else.
@@ -64,10 +68,11 @@ function Register () {
                 required
                 value={password}
                 onChange={event => setPassword(event.target.value)}
+                disabled={processing}
               />
             </Form.Group>
 
-            <Button variant='primary' type='submit'>
+            <Button variant='primary' type='submit' disabled={processing}>
               Submit
             </Button>
           </Form>
