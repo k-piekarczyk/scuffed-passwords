@@ -1,4 +1,4 @@
-import Navigation from '../../components/navigation'
+import Navigation from '../../../components/navigation'
 import { Container, Alert } from 'react-bootstrap'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
@@ -11,7 +11,7 @@ function Activate () {
 
   useEffect(async () => {
     const sessionToken = window.location.href.split('/').pop()
-    const response = await fetch('/api/activate', {
+    const response = await fetch('/api/auth/activate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

@@ -1,10 +1,10 @@
-import Navigation from '../components/navigation'
+import Navigation from '../../components/navigation'
 import { Container, Form, Button, Alert } from 'react-bootstrap'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { toast } from 'react-hot-toast'
 
-function Register () {
+function Login () {
   const router = useRouter()
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState('danger')
@@ -14,11 +14,11 @@ function Register () {
 
   const [processing, setProcessing] = useState(false)
 
-  async function submitRegister (event) {
+  async function submitLogin (event) {
     event.preventDefault()
     setProcessing(true)
 
-    const response = await fetch('/api/register', {
+    const response = await fetch('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -29,8 +29,9 @@ function Register () {
     const body = await response.json()
     setStatus(body.status)
     setMessage(body.message)
-    if (response.status === 201) {
-      toast.success('Successfully registered. Activate your account with the link we sent you.', {duration: 4000})
+    if (response.status === 200) {
+      window.localStorage.setItem('session', body.payload)
+      toast.success('Succesfull login.')
       router.push('/')
     } else {
       setProcessing(false)
@@ -39,12 +40,12 @@ function Register () {
 
   return (
     <>
-      <Navigation/>
+      <Navigation />
       <Container className='mt-5 d-flex justify-content-center'>
         <div>
-          <h1>Register</h1>
+          <h1>Log In</h1>
           {message && <Alert variant={status}>{message}</Alert>}
-          <Form onSubmit={submitRegister}>
+          <Form onSubmit={submitLogin}>
             <Form.Group controlId='formEmail'>
               <Form.Label>Email address</Form.Label>
               <Form.Control
@@ -82,4 +83,4 @@ function Register () {
   )
 }
 
-export default Register
+export default Login

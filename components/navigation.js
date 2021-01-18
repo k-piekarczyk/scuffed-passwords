@@ -35,10 +35,10 @@ function Navigation () {
 
   const unAuthRightLinks = (
     <Nav className='ml-auto'>
-      <Link href='/login' passHref>
+      <Link href='/auth/login' passHref>
         <Nav.Link>Log In</Nav.Link>
       </Link>
-      <Link href='/register' passHref>
+      <Link href='/auth/register' passHref>
         <Nav.Link>Register</Nav.Link>
       </Link>
     </Nav>

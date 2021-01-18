@@ -34,7 +34,6 @@ async function handler (req, res) {
 
   const token = await prisma.token.findUnique({
     where: {
-      type: 'activation',
       value: tokenValue
     }
   })

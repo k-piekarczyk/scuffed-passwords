@@ -1,6 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import { pbkdf2Sync, randomBytes } from 'crypto'
-import makeToken from '../../lib/makeToken'
+import makeToken from '../../../lib/makeToken'
 import moment from 'moment'
 
 const prisma = new PrismaClient()
@@ -59,7 +59,7 @@ async function handler (req, res) {
   }
 
   if (!user.activated) {
-    await makeToken(prisma, email)
+    await makeToken(prisma, email, 'activation', 'activate')
     await prisma.$disconnect()
     return res.status(400).json({
       message: 'The user has not been activated. We sent you a new activation token.',
