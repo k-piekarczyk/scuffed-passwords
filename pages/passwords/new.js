@@ -6,8 +6,12 @@ import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import forge from 'node-forge'
 import { toast } from 'react-hot-toast'
 import stringEntropy from 'fast-password-entropy'
+import { PrismaClient } from '@prisma/client'
+import { randomBytes } from 'crypto'
 
-function NewPassword () {
+const prisma = new PrismaClient()
+
+function NewPassword ({ csrfToken }) {
   const router = useRouter()
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState('danger')
@@ -76,6 +80,7 @@ function NewPassword () {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken,
         Authorization: sessionToken
       },
       body: JSON.stringify({
@@ -92,7 +97,16 @@ function NewPassword () {
       return
     }
 
-    const body = await response.json()
+    let body
+    try {
+      body = await response.json()
+    } catch (err) {
+      window.localStorage.removeItem('session')
+      toast.error('Session integrity lost!')
+      router.push('/')
+      return
+    }
+
     setStatus(body.status)
     setMessage(body.message)
     if (response.status === 201) {
@@ -197,6 +211,27 @@ function NewPassword () {
       </Container>
     </>
   )
+}
+
+export async function getServerSideProps (ctx) {
+  const userAgent = ctx.req.headers['user-agent']
+  const ip = ctx.req.headers['x-real-ip'] ? ctx.req.headers['x-real-ip'] : String(ctx.req.socket.remoteAddress)
+
+  const csrfToken = randomBytes(32).toString('hex')
+
+  await prisma.csrfToken.create({
+    data: {
+      value: csrfToken,
+      type: 'add-new-password',
+      agent: userAgent,
+      ip
+    }
+  })
+
+  await prisma.$disconnect()
+  return {
+    props: { csrfToken }
+  }
 }
 
 export default NewPassword

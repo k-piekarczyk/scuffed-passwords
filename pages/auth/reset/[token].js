@@ -57,7 +57,16 @@ function PasswordReset ({ csrfToken }) {
       body: JSON.stringify({ tokenValue: token, password})
     })
 
-    const body = await response.json()
+    let body
+    try {
+      body = await response.json()
+    } catch (err) {
+      window.localStorage.removeItem('session')
+      toast.error('Session integrity lost!')
+      router.push('/')
+      return
+    }
+
     setStatus(body.status)
     setMessage(body.message)
     if (response.status === 200) {

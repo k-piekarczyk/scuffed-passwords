@@ -11,11 +11,48 @@ async function PasswordsAPI (req, res) {
       await getHandler(req, res, user)
       break
     case 'POST':
-      await postHandler(req, res, user)
+      // eslint-disable-next-line no-case-declarations
+      const csrf = await csrfSafe(req, res)
+      if (!csrf) return
+      await postHandler(req, res, user, csrf)
       break
     default:
       return res.status(405).end()
   }
+}
+
+async function csrfSafe (req, res) {
+  const userAgent = req.headers['user-agent']
+  const ip = req.headers['x-real-ip'] ? req.headers['x-real-ip'] : String(req.socket.remoteAddress)
+  const csrfToken = req.headers['x-csrf-token']
+
+  if (!csrfToken) {
+    await prisma.$disconnect()
+    res.status(400).end()
+    return false
+  }
+
+  const token = await prisma.csrfToken.findUnique({
+    where: { value: csrfToken }
+  })
+
+  if (!token || token.invalid) {
+    await prisma.$disconnect()
+    res.status(400).end()
+    return false
+  }
+
+  if (token.ip !== ip || token.agent !== userAgent || token.type !== 'add-new-password') {
+    await prisma.csrfToken.update({
+      where: { id: token.id },
+      data: { invalid: true }
+    })
+    await prisma.$disconnect()
+    res.status(400).end()
+    return false
+  }
+
+  return token
 }
 
 async function checkSession (req, res) {
@@ -75,7 +112,7 @@ async function getHandler (req, res, user) {
   return res.status(200).json(passwords)
 }
 
-async function postHandler (req, res, user) {
+async function postHandler (req, res, user, csrf) {
   const { name, encrypted, salt, iv } = req.body
   if (
     (!name || typeof name !== 'string') ||
@@ -101,6 +138,11 @@ async function postHandler (req, res, user) {
           connect: { id: user.id }
         }
       }
+    })
+
+    await prisma.csrfToken.update({
+      where: { id: csrf.id },
+      data: { invalid: true }
     })
 
     await prisma.$disconnect()
