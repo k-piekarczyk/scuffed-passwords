@@ -1,8 +1,9 @@
 import Navigation from '../../../components/navigation'
-import { Container, Alert, Form, Button } from 'react-bootstrap'
-import { useState } from 'react'
+import { Container, Alert, Form, Button, ProgressBar } from 'react-bootstrap'
+import { useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { toast } from 'react-hot-toast'
+import stringEntropy from 'fast-password-entropy'
 
 function Activate () {
   const router = useRouter()
@@ -14,6 +15,15 @@ function Activate () {
 
   const [processing, setProcessing] = useState(false)
 
+  const passwordStrength = useMemo(() => {
+    const entr = stringEntropy(password)
+    if (entr < 28) return { per: 0, va: 'danger', entr, m: 'abysmally weak' }
+    else if (entr < 36) return { per: 25, va: 'danger', entr, m: 'weak' }
+    else if (entr < 60) return { per: 50, va: 'warning', entr, m: 'reasonable' }
+    else if (entr < 128) return { per: 75, va: 'info', entr, m: 'strong' }
+    else return { per: 100, va: 'success', entr, m: 'very strong' }
+  }, [password])
+
   async function handleReset (event) {
     event.preventDefault()
     setProcessing(true)
@@ -21,6 +31,13 @@ function Activate () {
     if (password !== passwordRepeat) {
       setStatus('danger')
       setMessage('Both passwords need to be the same!')
+      setProcessing(false)
+      return
+    }
+
+    if (passwordStrength.entr < 60) {
+      setStatus('danger')
+      setMessage('Your password should be at least strong!')
       setProcessing(false)
       return
     }
@@ -64,6 +81,10 @@ function Activate () {
                 onChange={event => setPassword(event.target.value)}
                 disabled={processing}
               />
+              <ProgressBar striped variant={passwordStrength.va} now={passwordStrength.per}/>
+              <Form.Text className='text-muted'>
+                Password entropy: {passwordStrength.entr}, this password is {passwordStrength.m}
+              </Form.Text>
             </Form.Group>
 
             <Form.Group controlId='formBasicPasswordRepeat'>
