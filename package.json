@@ -8,6 +8,7 @@
     "start": "next start",
     "standard": "standard",
     "standard:fix": "standard --fix",
+    "db:generate": "prisma generate",
     "db:init": "prisma migrate dev --name \"init\" --preview-feature"
   },
   "repository": {

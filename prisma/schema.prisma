@@ -1,10 +1,16 @@
 generator client {
   provider = "prisma-client-js"
+  binaryTargets = ["native"]
 }
 
+//datasource db {
+//  provider = "sqlite"
+//  url      = "file:./scuffed.db"
+//}
+
 datasource db {
-  provider = "sqlite"
-  url      = "file:./scuffed.db"
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {

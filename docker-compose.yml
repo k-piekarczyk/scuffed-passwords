@@ -1,10 +1,27 @@
 version: '3'
 services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: dbpass
+      POSTGRES_DB: scuffed
+    volumes:
+      - postgres:/var/lib/postgresql/data
   app:
     build: ./
+    environment:
+      DATABASE_URL: postgresql://dbuser:dbpass@db:5432/scuffed?schema=scuffed&sslmode=prefer
+    depends_on:
+      - db
   nginx:
     build: ./nginx
     ports:
       - 8080:80
     depends_on:
       - app
+
+volumes:
+  postgres:
+    name: scuffed-db

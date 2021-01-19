@@ -1,2 +1,1 @@
-npm run db:init
-pm2-runtime npm -- start
+sleep 10 && npx prisma migrate dev --name "init" --preview-feature && npx next start
