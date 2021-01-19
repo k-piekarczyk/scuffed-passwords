@@ -8,7 +8,7 @@
     "start": "next start",
     "standard": "standard",
     "standard:fix": "standard --fix",
-    "db:dev:init": "prisma migrate dev --name \"init\" --preview-feature"
+    "db:init": "prisma migrate dev --name \"init\" --preview-feature"
   },
   "repository": {
     "type": "git",
