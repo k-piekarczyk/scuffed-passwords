@@ -4,7 +4,6 @@ CREATE TABLE "User" (
     "email" TEXT NOT NULL,
     "activated" BOOLEAN NOT NULL DEFAULT false,
     "strikes" INTEGER NOT NULL DEFAULT 0,
-    "lastFailedLoginID" INTEGER,
     "locked" BOOLEAN NOT NULL DEFAULT false,
     "passwordHash" TEXT NOT NULL,
     "passwordSalt" TEXT NOT NULL
@@ -56,6 +55,16 @@ CREATE TABLE "Token" (
     FOREIGN KEY ("userId") REFERENCES "User" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- CreateTable
+CREATE TABLE "CsrfToken" (
+    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "ip" TEXT NOT NULL,
+    "agent" TEXT NOT NULL,
+    "type" TEXT NOT NULL,
+    "value" TEXT NOT NULL,
+    "invalid" BOOLEAN NOT NULL DEFAULT false
+);
+
 -- CreateIndex
 CREATE UNIQUE INDEX "User.email_unique" ON "User"("email");
 
@@ -67,3 +76,6 @@ CREATE UNIQUE INDEX "Session.token_unique" ON "Session"("token");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Token.value_unique" ON "Token"("value");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "CsrfToken.value_unique" ON "CsrfToken"("value");

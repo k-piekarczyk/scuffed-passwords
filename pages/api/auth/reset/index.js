@@ -67,7 +67,6 @@ async function handler (req, res) {
       data: { invalid: true }
     })
   } catch (error) {
-    console.log(error)
     await prisma.$disconnect()
     return res.status(500).json({
       message: 'Congrats, you broke it :c',

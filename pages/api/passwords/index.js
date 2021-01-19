@@ -20,7 +20,7 @@ async function PasswordsAPI (req, res) {
 
 async function checkSession (req, res) {
   const sessionToken = req.headers.authorization
-  const ip = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'] : String(req.socket.remoteAddress)
+  const ip = req.headers['x-real-ip'] ? req.headers['x-real-ip'] : String(req.socket.remoteAddress)
   const userAgent = req.headers['user-agent']
 
   if (!userAgent) {

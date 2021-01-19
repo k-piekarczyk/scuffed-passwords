@@ -67,3 +67,12 @@ model Token {
   expires  DateTime
   invalid  Boolean   @default(false)
 }
+
+model CsrfToken {
+  id       Int       @id @default(autoincrement())
+  ip       String
+  agent    String
+  type     String
+  value    String    @unique
+  invalid  Boolean   @default(false)
+}

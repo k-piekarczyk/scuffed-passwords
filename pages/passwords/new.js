@@ -1,10 +1,11 @@
 import Navigation from '../../components/navigation'
-import { Container, Form, Button, Alert, InputGroup } from 'react-bootstrap'
-import { useEffect, useState } from 'react'
+import { Container, Form, Button, Alert, InputGroup, ProgressBar } from 'react-bootstrap'
+import { useEffect, useMemo, useState } from 'react'
 import { useRouter } from 'next/router'
 import { FaEye, FaEyeSlash } from 'react-icons/fa'
 import forge from 'node-forge'
 import { toast } from 'react-hot-toast'
+import stringEntropy from 'fast-password-entropy'
 
 function NewPassword () {
   const router = useRouter()
@@ -21,6 +22,24 @@ function NewPassword () {
 
   const [isAuth, setIsAuth] = useState(false)
 
+  const passwordStrength = useMemo(() => {
+    const entr = stringEntropy(password)
+    if (entr < 28) return { per: 0, va: 'danger', entr, m: 'abysmally weak' }
+    else if (entr < 36) return { per: 25, va: 'danger', entr, m: 'weak' }
+    else if (entr < 60) return { per: 50, va: 'warning', entr, m: 'reasonable' }
+    else if (entr < 128) return { per: 75, va: 'info', entr, m: 'strong' }
+    else return { per: 100, va: 'success', entr, m: 'very strong' }
+  }, [password])
+
+  const masterPasswordStrength = useMemo(() => {
+    const entr = stringEntropy(masterPassword)
+    if (entr < 28) return { per: 0, va: 'danger', entr, m: 'abysmally weak' }
+    else if (entr < 36) return { per: 25, va: 'danger', entr, m: 'weak' }
+    else if (entr < 60) return { per: 50, va: 'warning', entr, m: 'reasonable' }
+    else if (entr < 128) return { per: 75, va: 'info', entr, m: 'strong' }
+    else return { per: 100, va: 'success', entr, m: 'very strong' }
+  }, [masterPassword])
+
   useEffect(() => {
     if (!window.localStorage.getItem('session')) {
       router.push('/')
@@ -32,6 +51,13 @@ function NewPassword () {
   async function submitNewPassword (event) {
     event.preventDefault()
     setProcessing(true)
+
+    if (masterPasswordStrength.entr < 60) {
+      setStatus('danger')
+      setMessage('Your master password should be at least strong!')
+      setProcessing(false)
+      return
+    }
 
     const sessionToken = window.localStorage.getItem('session')
 
@@ -128,6 +154,10 @@ function NewPassword () {
                   </Button>
                 </InputGroup.Append>
               </InputGroup>
+              <ProgressBar striped variant={passwordStrength.va} now={passwordStrength.per} />
+              <Form.Text className='text-muted'>
+                Password entropy: {passwordStrength.entr}, this password is {passwordStrength.m}
+              </Form.Text>
             </Form.Group>
 
             <Form.Group controlId='formBasicMasterPassword'>
@@ -150,6 +180,10 @@ function NewPassword () {
                   </Button>
                 </InputGroup.Append>
               </InputGroup>
+              <ProgressBar striped variant={masterPasswordStrength.va} now={masterPasswordStrength.per} />
+              <Form.Text className='text-muted'>
+                Password entropy: {masterPasswordStrength.entr}, this password is {masterPasswordStrength.m}
+              </Form.Text>
               <Form.Text className='text-muted'>
                 This password is never stored, if you loose it, your data is gone.
               </Form.Text>
