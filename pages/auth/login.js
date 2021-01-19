@@ -30,7 +30,12 @@ function Login () {
     setStatus(body.status)
     setMessage(body.message)
     if (response.status === 200) {
-      window.localStorage.setItem('session', body.payload)
+      window.localStorage.setItem('session', body.payload.session)
+
+      if (body.payload.promptPasswordChange) {
+        toast.error('There were more than one failed attempts to log in, better change your password!', { duration: 10000 })
+      }
+
       toast.success('Succesfull login.')
       router.push('/')
     } else {
@@ -45,7 +50,7 @@ function Login () {
 
   return (
     <>
-      <Navigation />
+      <Navigation/>
       <Container className='mt-5 d-flex justify-content-center'>
         <div>
           <h1>Log In</h1>

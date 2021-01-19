@@ -17,7 +17,6 @@ model User {
   email                String     @unique
   activated            Boolean    @default(false)
   strikes              Int        @default(0)
-  lastFailedLoginID    Int?
   locked               Boolean    @default(false)
   passwordHash         String
   passwordSalt         String

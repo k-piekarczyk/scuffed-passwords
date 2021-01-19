@@ -17,6 +17,7 @@ async function LoginAPI (req, res) {
 
 async function handler (req, res) {
   const userAgent = req.headers['user-agent']
+  const ip = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'] : String(req.socket.remoteAddress)
 
   if (!userAgent) {
     await prisma.$disconnect()
@@ -48,9 +49,49 @@ async function handler (req, res) {
     })
   }
 
+  if (user.locked) {
+    await prisma.$disconnect()
+    return res.status(400).json({
+      message: 'This account has been locked due to consecutive failed login attempts. Follow the password restoration procedures to unlock.',
+      status: 'danger'
+    })
+  }
+
   const passwordHash = pbkdf2Sync(password, user.passwordSalt, 100000, 512, 'sha512').toString('hex')
 
   if (passwordHash !== user.passwordHash) {
+    const failedLogin = await prisma.failedLoginAttempt.create({
+      data: {
+        user: {
+          connect: { email: user.email }
+        },
+        timestamp: moment.utc().toDate(),
+        agent: userAgent,
+        ip
+      }
+    })
+
+    if (user.strikes < 2) {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          strikes: user.strikes + 1
+        }
+      })
+
+      await new Promise(resolve => setTimeout(
+        resolve,
+        (Math.floor(Math.random() * (278 - 99 + 1)) + 99) * user.strikes
+      ))
+    } else {
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          locked: true
+        }
+      })
+    }
+
     await prisma.$disconnect()
     return res.status(400).json({
       message: 'Wrong email/password.',
@@ -67,7 +108,16 @@ async function handler (req, res) {
     })
   }
 
-  const ip = req.headers['x-forwarded-for'] ? req.headers['x-forwarded-for'] : String(req.socket.remoteAddress)
+  const promptPasswordChange = user.strikes > 1
+
+  if (user.strikes > 0) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        strikes: 0
+      }
+    })
+  }
 
   const session = await prisma.session.create({
     data: {
@@ -86,7 +136,10 @@ async function handler (req, res) {
   return res.status(200).json({
     message: 'Successfull login',
     status: 'success',
-    payload: session.token
+    payload: {
+      session: session.token,
+      promptPasswordChange
+    }
   })
 }
 

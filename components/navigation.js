@@ -46,6 +46,9 @@ function Navigation () {
 
   const authRightLinks = (
     <Nav className='ml-auto'>
+      <Link href='/auth/failed' passHref>
+        <Nav.Link>Login Attempts</Nav.Link>
+      </Link>
       <Nav.Link onClick={handleLogout}>Log Out</Nav.Link>
     </Nav>
   )
