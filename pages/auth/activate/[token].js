@@ -10,19 +10,23 @@ function Activate () {
   const [status, setStatus] = useState('danger')
 
   useEffect(async () => {
-    const sessionToken = window.location.href.split('/').pop()
+    const token = window.location.href.split('/').pop()
     const response = await fetch('/api/auth/activate', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ tokenValue: sessionToken })
+      body: JSON.stringify({ tokenValue: token })
     })
 
     const body = await response.json()
     setStatus(body.status)
     setMessage(body.message)
-    toast.success('Successfully activated the account. You can log in now.', { duration: 4000 })
+    if (response.status === 200) {
+      toast.success('Successfully activated the account. You can log in now.', { duration: 4000 })
+    } else {
+      toast.error('The token was invalid.')
+    }
     router.push('/')
   }, [])
 

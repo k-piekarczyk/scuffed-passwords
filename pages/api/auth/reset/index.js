@@ -1,10 +1,11 @@
 import { PrismaClient } from '@prisma/client'
+import { pbkdf2Sync, randomBytes } from 'crypto'
 
 import moment from 'moment'
 
 const prisma = new PrismaClient()
 
-async function ActivateAPI (req, res) {
+async function ResetPasswordAPI (req, res) {
   switch (req.method) {
     case 'POST':
       await handler(req, res)
@@ -22,12 +23,12 @@ async function handler (req, res) {
     return res.status(400).end()
   }
 
-  const { tokenValue } = req.body
+  const { tokenValue, password } = req.body
 
-  if (!tokenValue || typeof tokenValue !== 'string') {
+  if ((!tokenValue || typeof tokenValue !== 'string') || (!password || typeof password !== 'string')) {
     await prisma.$disconnect()
     return res.status(400).json({
-      message: 'This route expects a tokenValue that is a string',
+      message: 'This route expects a tokenValue and a password that is a string',
       status: 'danger'
     })
   }
@@ -38,7 +39,7 @@ async function handler (req, res) {
     }
   })
 
-  if (!token || token.invalid || token.type !== 'activation' || moment().isAfter(moment(token.expires))) {
+  if (!token || token.invalid || token.type !== 'reset-password' || moment().isAfter(moment(token.expires))) {
     await prisma.$disconnect()
     return res.status(400).json({
       message: 'Invalid activation token.',
@@ -47,9 +48,18 @@ async function handler (req, res) {
   }
 
   try {
+    const salt = randomBytes(8).toString('hex')
+    const passwordHash = pbkdf2Sync(password, salt, 100000, 512, 'sha512').toString('hex')
+
     await prisma.user.update({
       where: { id: token.userId },
-      data: { activated: true }
+      data: {
+        passwordHash,
+        passwordSalt: salt,
+        strikes: 0,
+        locked: false,
+        lastFailedLoginID: null
+      }
     })
 
     await prisma.token.update({
@@ -67,9 +77,9 @@ async function handler (req, res) {
 
   await prisma.$disconnect()
   return res.status(200).json({
-    message: 'User activated.',
+    message: 'Password changed.',
     status: 'success'
   })
 }
 
-export default ActivateAPI
+export default ResetPasswordAPI
