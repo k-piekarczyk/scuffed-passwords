@@ -38,6 +38,11 @@ function Login () {
     }
   }
 
+  function handleForgotButton (event) {
+    event.preventDefault()
+    router.push('/auth/reset/request')
+  }
+
   return (
     <>
       <Navigation />
@@ -75,6 +80,10 @@ function Login () {
 
             <Button variant='primary' type='submit' disabled={processing}>
               Submit
+            </Button>
+
+            <Button variant='tertiary' type='button' disabled={processing} onClick={handleForgotButton}>
+              Forgot password
             </Button>
           </Form>
         </div>

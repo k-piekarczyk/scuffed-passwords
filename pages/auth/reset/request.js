@@ -1,36 +1,35 @@
-import Navigation from '../../components/navigation'
+import Navigation from '../../../components/navigation'
 import { Container, Form, Button, Alert } from 'react-bootstrap'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
 import { toast } from 'react-hot-toast'
 
-function Register () {
+function RequestPasswordReset () {
   const router = useRouter()
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState('danger')
 
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
 
   const [processing, setProcessing] = useState(false)
 
-  async function submitRegister (event) {
+  async function submitRequest (event) {
     event.preventDefault()
     setProcessing(true)
 
-    const response = await fetch('/api/auth/register', {
+    const response = await fetch('/api/auth/reset/request', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email })
     })
 
     const body = await response.json()
     setStatus(body.status)
     setMessage(body.message)
-    if (response.status === 201) {
-      toast.success('Successfully registered. Activate your account with the link we sent you.', { duration: 4000})
+    if (response.status === 200) {
+      toast.success('Request submitted. If there exists an account with that email, you will receive your reset token.', { duration: 5000 })
       router.push('/')
     } else {
       setProcessing(false)
@@ -42,9 +41,9 @@ function Register () {
       <Navigation/>
       <Container className='mt-5 d-flex justify-content-center'>
         <div>
-          <h1>Register</h1>
+          <h1>Request password reset</h1>
           {message && <Alert variant={status}>{message}</Alert>}
-          <Form onSubmit={submitRegister}>
+          <Form onSubmit={submitRequest}>
             <Form.Group controlId='formEmail'>
               <Form.Label>Email address</Form.Label>
               <Form.Control
@@ -59,19 +58,6 @@ function Register () {
                 We'll never share your email with anyone else.
               </Form.Text>
             </Form.Group>
-
-            <Form.Group controlId='formBasicPassword'>
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type='password'
-                placeholder='Password'
-                required
-                value={password}
-                onChange={event => setPassword(event.target.value)}
-                disabled={processing}
-              />
-            </Form.Group>
-
             <Button variant='primary' type='submit' disabled={processing}>
               Submit
             </Button>
@@ -82,4 +68,4 @@ function Register () {
   )
 }
 
-export default Register
+export default RequestPasswordReset
