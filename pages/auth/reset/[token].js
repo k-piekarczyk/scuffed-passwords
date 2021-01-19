@@ -5,7 +5,12 @@ import { useRouter } from 'next/router'
 import { toast } from 'react-hot-toast'
 import stringEntropy from 'fast-password-entropy'
 
-function Activate () {
+import { PrismaClient } from '@prisma/client'
+import { randomBytes } from 'crypto'
+
+const prisma = new PrismaClient()
+
+function PasswordReset ({ csrfToken }) {
   const router = useRouter()
   const [message, setMessage] = useState('')
   const [status, setStatus] = useState('danger')
@@ -46,7 +51,8 @@ function Activate () {
     const response = await fetch('/api/auth/reset', {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-CSRF-Token': csrfToken
       },
       body: JSON.stringify({ tokenValue: token, password})
     })
@@ -109,4 +115,25 @@ function Activate () {
   )
 }
 
-export default Activate
+export async function getServerSideProps (ctx) {
+  const userAgent = ctx.req.headers['user-agent']
+  const ip = ctx.req.headers['x-real-ip'] ? ctx.req.headers['x-real-ip'] : String(ctx.req.socket.remoteAddress)
+
+  const csrfToken = randomBytes(32).toString('hex')
+
+  await prisma.csrfToken.create({
+    data: {
+      value: csrfToken,
+      type: 'password-reset',
+      agent: userAgent,
+      ip
+    }
+  })
+
+  await prisma.$disconnect()
+  return {
+    props: { csrfToken }
+  }
+}
+
+export default PasswordReset

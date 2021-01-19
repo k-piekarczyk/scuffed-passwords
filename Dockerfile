@@ -10,8 +10,10 @@ RUN npm install --production
 COPY ./ ./
 RUN npm run build
 
+RUN chmod +x /start.sh
+
 EXPOSE 3000
 
 USER node
 
-CMD ["pm2-runtime", "npm", "--", "start"]
+CMD ["/start.sh"]
